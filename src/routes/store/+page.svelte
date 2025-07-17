@@ -1,31 +1,27 @@
 <script lang="ts">
+	import type { AppComponent, Category } from '$lib/types';
 	import { base } from '$app/paths';
 	import { capitalize } from '$lib/helper';
 	import { current_page, Page } from '$lib/store';
 	import categories from '$lib/data/categories.json';
 	import AttentionBanner from '$lib/components/AttentionBanner.svelte';
 
-	const components = import.meta.glob('$lib/apps/*.md', { eager: true });
-	console.log(Object.entries(components));
+	const components: Record<string, AppComponent> = import.meta.glob('$lib/apps/*.md', { eager: true });
 
 	$current_page = Page.AppStore;
 
-	let applications = $state(Object.entries(components));
+	let applications = $state<[string, AppComponent][]>(Object.entries(components));
+	let current_cat: string = '';
 
-	function filter(cat: string) {
-		if (current_cat == cat) {
-			// Reset the state
+	function filter(cat: string): void {
+		if (current_cat === cat) {
 			applications = Object.entries(components);
 			current_cat = '';
 		} else {
-			applications = Object.entries(components).filter((val) => {
-				return val[1].metadata.category == cat;
-			});
+			applications = Object.entries(components).filter((val) => val[1].metadata.category === cat);
 			current_cat = cat;
 		}
 	}
-
-	let current_cat = '';
 </script>
 
 <div class="mt-32 text-center">
